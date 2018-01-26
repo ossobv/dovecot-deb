@@ -1,0 +1,16 @@
+dovecot (1:2.3.0-0osso2) xenial; urgency=medium
+
+  * Take dovecot-2.3.0.tar.gz.
+  * Add pigeonhole + fix-sieve patch + add sieve/managsieved into control and
+    rules.
+  * Update pigeonhole patch to 0.5.0.1 for dovecot 2.3.0.
+  * Change name from dovecot-ce to dovecot; change version from 2:2.3.0 to
+    1:2.3.0.
+
+ -- Walter Doekes (work) <wjdoekes@osso.nl>  Fri, 26 Jan 2018 10:44:49 +0100
+
+dovecot-ce (2:2.3.0-1) stable; urgency=low
+
+  * Dovecot CE 2.3 release
+
+ -- Dovecot Builder <support@dovecot.fi>  Fri, 22 Dec 2017 15:55:32 +0200
