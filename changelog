@@ -3,6 +3,9 @@ dovecot (1:2.3.1-0osso1) xenial; urgency=medium
   * Imported most of the config from the dovecot_2.3.1-2.debian.tar.xz
     (from https://launchpad.net/debian/+source/dovecot/1:2.3.1-2#).
   * Skipped a few changes to rules/compat/packaging. That's for a later day.
+  * Add LDA fix so we can accept bounces again. Fixes:
+    "status=bounced (command line usage error. Command output: lda: Fatal:
+    Invalid -f parameter: Missing domain )"
 
   [dovecot (1:2.3.1-2) experimental; urgency=medium]
   * [9354842] Update murmur3-big-endian.patch with upstream commits
