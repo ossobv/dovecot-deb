@@ -1,3 +1,10 @@
+dovecot (1:2.3.1-0osso1) xenial; urgency=medium
+
+  [dovecot (1:2.3.1-1) experimental; urgency=medium]
+  * [0be1513] Update pigeonhole to 0.5.1
+
+ -- Walter Doekes (work) <wjdoekes@osso.nl>  Thu, 14 Jun 2018 15:29:18 +0200
+
 dovecot (1:2.3.0-0osso2) xenial; urgency=medium
 
   * Take dovecot-2.3.0.tar.gz.

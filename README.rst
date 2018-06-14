@@ -32,7 +32,9 @@ Changes from Ubuntu 2.2.22 build
 
   - mixing it with the dovecot-2.2.22 Ubuntu/Xenial debian dir;
 
-  - updating the pigeonhole.patch with the 0.5.0.1 source.
+  - updating the pigeonhole.patch with the 0.5.0.1 source;
+
+  - updating everything with the Debian 2.3.1-2 patches.
 
 * Relevant changes in our case:
 
