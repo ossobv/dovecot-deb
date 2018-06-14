@@ -35,7 +35,7 @@ managesieved_files = usr/lib/dovecot/managesieve* \
 		     usr/lib/dovecot/modules/settings/libmanagesieve*
 
 submissiond_files = usr/lib/dovecot/submission* \
-	      usr/share/dovecot/conf.d/??-submission*
+	          usr/share/dovecot/conf.d/??-submission*
 
 pgsql_files = usr/lib/dovecot/modules/auth/libdriver_pgsql* \
 	      usr/lib/dovecot/modules/dict/libdriver_pgsql* \
@@ -64,6 +64,7 @@ ldap_files = usr/lib/dovecot/modules/auth/libauthdb_ldap* \
 
 sieve_files = usr/bin/sieve* \
 	      usr/lib/dovecot/modules/lib??_sieve* \
+	      usr/lib/dovecot/modules/lib??_imap_sieve* \
 	      usr/lib/dovecot/modules/doveadm/lib??_doveadm_sieve* \
 	      usr/lib/dovecot/modules/sieve \
 	      usr/lib/dovecot/libdovecot-sieve* \
@@ -156,18 +157,17 @@ override_dh_install:
 	
 	rmdir $(CORE_DIR)/usr/include
 	rmdir $(CORE_DIR)/usr/share/aclocal
+	install -d $(PKG_DIR:PKG=dev)/usr/share/dovecot
 	grep ABI_VERSION config.h \
 		| perl -ne '/"(.+)\(.+\)"/ && print $$1' \
 		| tr '[A-Z]' '[a-z]' > $(PKG_DIR:PKG=dev)/usr/share/dovecot/dovecot-abi
 
-	sed -i "s@LIBDOVECOT='\(.*\)'@LIBDOVECOT=\'\1 -Wl,-R/usr/lib/dovecot\'@" \
-	  $(CURDIR)/debian/dovecot-dev/usr/lib/dovecot/dovecot-config
-	
 	# Install apport hook
 	install -D -m 644 debian/source_dovecot.py $(CURDIR)/debian/dovecot-core/usr/share/apport/package-hooks/dovecot-core.py
 
-	install -m644 debian/dovecot-imapd.ufw.profile debian/dovecot-imapd/etc/ufw/applications.d/dovecot-imapd
-	install -m644 debian/dovecot-pop3d.ufw.profile debian/dovecot-pop3d/etc/ufw/applications.d/dovecot-pop3d
+	install -D -m644 debian/dovecot-imapd.ufw.profile debian/dovecot-imapd/etc/ufw/applications.d/dovecot-imapd
+	install -D -m644 debian/dovecot-pop3d.ufw.profile debian/dovecot-pop3d/etc/ufw/applications.d/dovecot-pop3d
+
 
 override_dh_installpam:
 	dh_installpam -pdovecot-core --name=dovecot
