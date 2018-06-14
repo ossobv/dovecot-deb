@@ -1,18 +1,16 @@
-OSSO build of dovecot 2.3.0
+OSSO build of dovecot 2.3.1
 ===========================
 
 Get source::
 
-    wget https://dovecot.org/releases/2.3/dovecot-2.3.0.tar.gz \
-      -O dovecot_2.3.0.orig.tar.gz
+    wget https://www.dovecot.org/releases/2.3/dovecot-2.3.1.tar.gz \
+      -O dovecot_2.3.1.orig.tar.gz
 
-    tar zxf dovecot_2.3.0.orig.tar.gz
-    mv dovecot-ce-2.3.0 dovecot-2.3.0
+    tar zxf dovecot_2.3.1.orig.tar.gz
 
 Setup ``debian/`` dir::
 
-    cd dovecot-2.3.0
-    rm -rf debian
+    cd dovecot-2.3.1
     git clone https://github.com/ossobv/dovecot-deb.git debian
 
 Optionally alter ``debian/changelog`` and then build::

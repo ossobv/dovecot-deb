@@ -1,5 +1,6 @@
 dovecot (1:2.3.1-0osso1) xenial; urgency=medium
 
+  * Updated to upstream dovecot-2.3.1.tar.gz.
   * Imported most of the config from the dovecot_2.3.1-2.debian.tar.xz
     (from https://launchpad.net/debian/+source/dovecot/1:2.3.1-2#).
   * Skipped a few changes to rules/compat/packaging. That's for a later day.
