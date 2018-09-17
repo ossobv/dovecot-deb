@@ -12,7 +12,7 @@ Bug: #698941
 
 --- a/doc/example-config/Makefile.in
 +++ b/doc/example-config/Makefile.in
-@@ -455,7 +455,7 @@
+@@ -469,7 +469,7 @@ top_srcdir = @top_srcdir@
  SUBDIRS = conf.d
  pkgsysconfdir = $(sysconfdir)/dovecot
  nodist_pkgsysconf_DATA = README
@@ -23,7 +23,7 @@ Bug: #698941
  	dovecot-dict-auth.conf.ext \
 --- a/doc/example-config/conf.d/Makefile.in
 +++ b/doc/example-config/conf.d/Makefile.in
-@@ -392,7 +392,7 @@
+@@ -406,7 +406,7 @@ top_build_prefix = @top_build_prefix@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  pkgsysconfdir = $(sysconfdir)/dovecot

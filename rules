@@ -111,7 +111,7 @@ override_dh_auto_configure:
 	
 	# Pigeonhole
 	(cd $(PIGEONHOLE_DIR)/ && \
-	    sh autogen.sh && \
+	    autoreconf -f -i && \
 	    touch stamp.h.in && \
 	    sh configure \
 	        --with-dovecot=../ \
