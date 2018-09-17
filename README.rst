@@ -1,5 +1,23 @@
-OSSO build of dovecot 2.3.1
-===========================
+OSSO build of dovecot 2.3.2.1
+=============================
+
+Using Docker::
+
+    ./Docker.build
+
+If the build succeeds, the built Debian packages are placed inside (a
+subdirectory of) ``Docker.out/``.
+
+
+------------
+Manual build
+------------
+
+You could do things manually without Docker. In that case it would look
+somewhat like this.
+
+Note that you may have to peek inside the Dockerfile for some extra
+steps to perform.
 
 Get source::
 
