@@ -1,3 +1,10 @@
+dovecot (1:2.3.3-0osso1+u16.04) xenial; urgency=medium
+
+  * Updated upstream dovecot-2.3.3.tar.gz, see
+    /usr/share/doc/dovecot-core/NEWS.gz for all changes.
+
+ -- Walter Doekes (work) <wjdoekes@osso.nl>  Mon, 05 Nov 2018 10:24:27 +0100
+
 dovecot (1:2.3.2.1-0osso1+u16.04) xenial; urgency=medium
 
   * Updated upstream dovecot-2.3.2.1.tar.gz, see

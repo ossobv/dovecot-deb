@@ -51,6 +51,19 @@ RUN if ! test -s /build/${upname}_${upversion}.orig.tar.gz; then \
 # TODO: check 0x18A348AEED409DA1 key
 RUN cd /build && tar zxf "${upname}_${upversion}.orig.tar.gz" && \
     mv debian "${upname}-${upversion}/"
+
+# Special tricks: fetch and update pigeonhole/sieve/managesieve patch.
+COPY ./README.rst .cache/dovecot-2.3-pigeonhole-0.5.3.tar.g[z] /build/
+RUN if ! test -s /build/dovecot-2.3-pigeonhole-0.5.3.tar.gz; then \
+    url="https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.3.tar.gz" && \
+    echo "Fetching: ${url}" >&2 && \
+    curl --fail "${url}" >/build/dovecot-2.3-pigeonhole-0.5.3.tar.gz; fi
+# TODO: check 0x18A348AEED409DA1 key
+RUN mkdir /build/pigeonhole /tmp/pigeonhole && \
+    tar -zx --strip-components=1 -C /build/pigeonhole -f /build/dovecot-2.3-pigeonhole-0.5.3.tar.gz && \
+    cd / && ( diff -uNr tmp/pigeonhole build/pigeonhole >build/pigeonhole.patch || true ) && \
+    rmdir /tmp/pigeonhole
+
 WORKDIR "/build/${upname}-${upversion}"
 
 # Apt-get prerequisites according to control file.
@@ -66,18 +79,6 @@ RUN printf "%s\n" \
     'QUILT_DIFF_OPTS="--show-c-function"' \
     >~/.quiltrc
 COPY . debian/
-
-# Special tricks: fetch and update pigeonhole/sieve/managesieve patch.
-COPY ./README.rst .cache/dovecot-2.3-pigeonhole-0.5.2.tar.g[z] /build/
-RUN if ! test -s /build/dovecot-2.3-pigeonhole-0.5.2.tar.gz; then \
-    url="https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.2.tar.gz" && \
-    echo "Fetching: ${url}" >&2 && \
-    curl --fail "${url}" >/build/dovecot-2.3-pigeonhole-0.5.2.tar.gz; fi
-# TODO: check 0x18A348AEED409DA1 key
-RUN mkdir /build/pigeonhole /tmp/pigeonhole && \
-    tar -zx --strip-components=1 -C /build/pigeonhole -f /build/dovecot-2.3-pigeonhole-0.5.2.tar.gz && \
-    cd / && ( diff -uNr tmp/pigeonhole build/pigeonhole >build/pigeonhole.patch || true ) && \
-    rmdir /tmp/pigeonhole
 RUN mv /build/pigeonhole.patch debian/patches/pigeonhole.patch
 
 # Build!
