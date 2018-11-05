@@ -6,19 +6,20 @@ buildversion=$(sed -e '1!d;s/.*(//;s/).*//' changelog)
 upversion=$(echo "$buildversion" | sed -e 's/-.*//;s/^[0-9]*://')
 debepoch=$(echo "$buildversion" | sed -e '/^[0-9]*:/!d;s/:.*/:/')
 debversion=$(echo "$buildversion" | sed -e 's/[^-]*-//;s/+[^+]*$//')
+dockname=$(basename $(pwd))
 dockversion=$(echo "$buildversion" | sed -e 's/^[0-9]*://;s/[^A-Za-z0-9.-]/_/g')
 
-# Build for stretch.
-codename=xenial  # don't change unless you fix "FROM ubuntu:xenial"
+# Build for xenial.
+codename=xenial # don't change unless you fix "FROM ubuntu:xenial"
 
 # Build.
 docker build \
     --build-arg upversion=$upversion \
     --build-arg debepoch=$debepoch \
     --build-arg debversion=$debversion \
-    -t dovecot-deb:$dockversion -f Dockerfile . || exit 1
+    -t $dockname:$dockversion -f Dockerfile . || exit 1
 
 # Run, so we export the compiled packages.
 docker run -e UID=$(id -u) \
     -v "$(pwd)/Docker.out/$codename:/Docker.out/$codename" \
-    dovecot-deb:$dockversion || exit 1
+    $dockname:$dockversion || exit 1
