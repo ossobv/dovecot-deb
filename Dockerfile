@@ -15,7 +15,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN mkdir -p /build/debian
 COPY ./changelog /build/debian/changelog
 RUN . /etc/os-release && \
-    fullversion="${upversion}-${debversion}+u${VERSION_ID}" && \
+    fullversion="${upversion}-${debversion}+${ID%%[be]*}${VERSION_ID}" && \
     expected="${upname} (${debepoch}${fullversion}) ${oscodename}; urgency=medium" && \
     head -n1 /build/debian/changelog && \
     if test "$(head -n1 /build/debian/changelog)" != "${expected}"; \
@@ -89,7 +89,7 @@ RUN DEB_BUILD_OPTIONS=parallel=6 dpkg-buildpackage -us -uc -sa
 # Write output files (store build args in ENV first).
 ENV oscodename=$oscodename \
     upname=$upname upversion=$upversion debversion=$debversion
-CMD . /etc/os-release && fullversion=${upversion}-${debversion}+u${VERSION_ID} && \
+CMD . /etc/os-release && fullversion=${upversion}-${debversion}+${ID%%[be]*}${VERSION_ID} && \
     dist=Docker.out && \
     if ! test -d "/${dist}"; then echo "Please mount ./${dist} for output" >&2; false; fi && \
     echo && . /etc/os-release && mkdir "/${dist}/${oscodename}/${upname}_${fullversion}" && \
