@@ -5,9 +5,17 @@ MAINTAINER Walter Doekes <wjdoekes+dovecot@osso.nl>
 # yet. Use a hack to s/debian:stretch/debian:OTHER/g above instead.
 ARG oscodename=xenial
 ARG upname=dovecot
+ARG upsha512=\
+9e97eb08c319c417e8abcb430b3e6c87ed5aa820d6288656fdfd958ff34664f6\
+7202a66e4846763bfc85b309b116cea8012e49dab98b478c57974cc178a37a5a
 ARG upversion=2.3.2.1
 ARG debepoch=1:
 ARG debversion=0osso1
+
+ARG pigeonholeversion=0.5.4
+ARG pigeonholesha512=\
+9c82cce7540f8ab66e2e370e0220c99048d6ac53ed680cd763e0b03d0200e245\
+1cee4303ef97b87a16e7248e1c73b92ba91b47a2a20c75cb2cd62695a28046f3
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -48,19 +56,19 @@ RUN if ! test -s /build/${upname}_${upversion}.orig.tar.gz; then \
     url="https://www.dovecot.org/releases/2.3/${upname}-${upversion}.tar.gz" && \
     echo "Fetching: ${url}" >&2 && \
     curl --fail "${url}" >/build/${upname}_${upversion}.orig.tar.gz; fi
-# TODO: check 0x18A348AEED409DA1 key
-RUN cd /build && tar zxf "${upname}_${upversion}.orig.tar.gz" && \
+RUN echo "$upsha512  /build/${upname}_${upversion}.orig.tar.gz" | sha512sum -c - && \
+    cd /build && tar zxf "${upname}_${upversion}.orig.tar.gz" && \
     mv debian "${upname}-${upversion}/"
 
 # Special tricks: fetch and update pigeonhole/sieve/managesieve patch.
-COPY ./README.rst .cache/dovecot-2.3-pigeonhole-0.5.3.tar.g[z] /build/
-RUN if ! test -s /build/dovecot-2.3-pigeonhole-0.5.3.tar.gz; then \
-    url="https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.3.tar.gz" && \
+COPY ./README.rst .cache/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.g[z] /build/
+RUN if ! test -s /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz; then \
+    url="https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz" && \
     echo "Fetching: ${url}" >&2 && \
-    curl --fail "${url}" >/build/dovecot-2.3-pigeonhole-0.5.3.tar.gz; fi
-# TODO: check 0x18A348AEED409DA1 key
-RUN mkdir /build/pigeonhole /tmp/pigeonhole && \
-    tar -zx --strip-components=1 -C /build/pigeonhole -f /build/dovecot-2.3-pigeonhole-0.5.3.tar.gz && \
+    curl --fail "${url}" >/build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz; fi
+RUN echo "$pigeonholesha512  /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz" | sha512sum -c - && \
+    mkdir /build/pigeonhole /tmp/pigeonhole && \
+    tar -zx --strip-components=1 -C /build/pigeonhole -f /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz && \
     cd / && ( diff -uNr tmp/pigeonhole build/pigeonhole >build/pigeonhole.patch || true ) && \
     rmdir /tmp/pigeonhole
 

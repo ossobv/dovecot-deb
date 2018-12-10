@@ -1,3 +1,14 @@
+dovecot (1:2.3.4-0osso1+u16.04) xenial; urgency=medium
+
+  * Updated upstream dovecot-2.3.4.tar.gz, see
+    /usr/share/doc/dovecot-core/NEWS.gz for all changes.
+  * Updated pigeonhole/sieve plugin to 0.5.4, see
+    https://raw.githubusercontent.com/dovecot/pigeonhole/0.5.4/NEWS
+    for the changes.
+  * Add SHA-512 sums for the source archives.
+
+ -- Walter Doekes (work) <wjdoekes@osso.nl>  Mon, 10 Dec 2018 11:27:22 +0100
+
 dovecot (1:2.3.3-0osso1+u16.04) xenial; urgency=medium
 
   * Updated upstream dovecot-2.3.3.tar.gz, see
