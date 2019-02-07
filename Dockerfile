@@ -6,9 +6,9 @@ MAINTAINER Walter Doekes <wjdoekes+dovecot@osso.nl>
 ARG oscodename=xenial
 ARG upname=dovecot
 ARG upsha512=\
-9e97eb08c319c417e8abcb430b3e6c87ed5aa820d6288656fdfd958ff34664f6\
-7202a66e4846763bfc85b309b116cea8012e49dab98b478c57974cc178a37a5a
-ARG upversion=2.3.2.1
+ff21aa0f0cae17dfa66617291688856727412defa48bad2b6be057cb509fbec1\
+c2e134afbfee69929d06b8692a0fcbd8451671ba02860e1673ae1c9483c2c17e
+ARG upversion=2.3.4.1
 ARG debepoch=1:
 ARG debversion=0osso1
 
