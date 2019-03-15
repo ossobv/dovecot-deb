@@ -6,16 +6,16 @@ MAINTAINER Walter Doekes <wjdoekes+dovecot@osso.nl>
 ARG oscodename=xenial
 ARG upname=dovecot
 ARG upsha512=\
-ff21aa0f0cae17dfa66617291688856727412defa48bad2b6be057cb509fbec1\
-c2e134afbfee69929d06b8692a0fcbd8451671ba02860e1673ae1c9483c2c17e
-ARG upversion=2.3.4.1
+10513c371aeadd52184daaf8dbb9a7559c6db55e34182bbb2c9539dae0897ddc\
+c76f6fe2ce6a81c7ce0cb94c7f79438ae3bb0e7db8ed46615feb337b4078ecc6
+ARG upversion=2.3.5
 ARG debepoch=1:
 ARG debversion=0osso1
 
-ARG pigeonholeversion=0.5.4
+ARG pigeonholeversion=0.5.5
 ARG pigeonholesha512=\
-9c82cce7540f8ab66e2e370e0220c99048d6ac53ed680cd763e0b03d0200e245\
-1cee4303ef97b87a16e7248e1c73b92ba91b47a2a20c75cb2cd62695a28046f3
+21519fc9b1152a947b64ce4251e1a4bdbe003b48233b1856a32696f9c1e29f73\
+0268c56eb38f9431bbfac345e6cd42e8c78c87d0702f39ebf20c6d326dcdbb94
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -89,8 +89,13 @@ RUN printf "%s\n" \
 COPY . debian/
 RUN mv /build/pigeonhole.patch debian/patches/pigeonhole.patch
 
-# Build!
+# Build, but become 'bin' before we do, because the next postfix tests
+# refuse to run as 'root'. And yes, we chown '..' because
+# dpkg-buildpackage touches some files there too.
+RUN chown -R bin ..
+USER bin
 RUN DEB_BUILD_OPTIONS=parallel=6 dpkg-buildpackage -us -uc -sa
+USER root
 
 # TODO: for bonus points, we could run quick tests here;
 # for starters dpkg -i tests?
