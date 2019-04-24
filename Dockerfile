@@ -5,17 +5,11 @@ MAINTAINER Walter Doekes <wjdoekes+dovecot@osso.nl>
 # yet. Use a hack to s/debian:stretch/debian:OTHER/g above instead.
 ARG oscodename=xenial
 ARG upname=dovecot
-ARG upsha512=\
-10513c371aeadd52184daaf8dbb9a7559c6db55e34182bbb2c9539dae0897ddc\
-c76f6fe2ce6a81c7ce0cb94c7f79438ae3bb0e7db8ed46615feb337b4078ecc6
 ARG upversion=2.3.5
 ARG debepoch=1:
 ARG debversion=0osso1
 
 ARG pigeonholeversion=0.5.5
-ARG pigeonholesha512=\
-21519fc9b1152a947b64ce4251e1a4bdbe003b48233b1856a32696f9c1e29f73\
-0268c56eb38f9431bbfac345e6cd42e8c78c87d0702f39ebf20c6d326dcdbb94
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -45,6 +39,14 @@ RUN apt-get install -y \
     bzip2 ca-certificates curl git \
     build-essential dh-autoreconf devscripts dpkg-dev equivs quilt
 
+# Hardcode sha512sums. You may pass these as build-arg too though.
+ARG upsha512=\
+041ec1c33c6accb5c89d96d7ab2f7dd59795f496c17faea1906e7977983e4a38\
+7aa855a238376515c09532731634d9d42e6d6be22659062855241847ea0213d5
+ARG pigeonholesha512=\
+21519fc9b1152a947b64ce4251e1a4bdbe003b48233b1856a32696f9c1e29f73\
+0268c56eb38f9431bbfac345e6cd42e8c78c87d0702f39ebf20c6d326dcdbb94
+
 # Set up upstream source, move debian dir and jump into dir.
 #
 # Trick to allow caching of asterisk*.tar.gz files. Download them
@@ -53,10 +55,11 @@ RUN apt-get install -y \
 # file (README.rst) so the COPY doesn't fail.)
 COPY ./README.rst .cache/${upname}_${upversion}.orig.tar.g[z] /build/
 RUN if ! test -s /build/${upname}_${upversion}.orig.tar.gz; then \
-    url="https://www.dovecot.org/releases/2.3/${upname}-${upversion}.tar.gz" && \
+    url="https://dovecot.org/releases/2.3/${upname}-${upversion}.tar.gz" && \
     echo "Fetching: ${url}" >&2 && \
     curl --fail "${url}" >/build/${upname}_${upversion}.orig.tar.gz; fi
-RUN echo "$upsha512  /build/${upname}_${upversion}.orig.tar.gz" | sha512sum -c - && \
+RUN sha512sum /build/${upname}_${upversion}.orig.tar.gz && \
+    echo "$upsha512  /build/${upname}_${upversion}.orig.tar.gz" | sha512sum -c - && \
     cd /build && tar zxf "${upname}_${upversion}.orig.tar.gz" && \
     mv debian "${upname}-${upversion}/"
 
@@ -66,7 +69,8 @@ RUN if ! test -s /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz; then \
     url="https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz" && \
     echo "Fetching: ${url}" >&2 && \
     curl --fail "${url}" >/build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz; fi
-RUN echo "$pigeonholesha512  /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz" | sha512sum -c - && \
+RUN sha512sum /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz && \
+    echo "$pigeonholesha512  /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz" | sha512sum -c - && \
     mkdir /build/pigeonhole /tmp/pigeonhole && \
     tar -zx --strip-components=1 -C /build/pigeonhole -f /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz && \
     cd / && ( diff -uNr tmp/pigeonhole build/pigeonhole >build/pigeonhole.patch || true ) && \
