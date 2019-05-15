@@ -2,6 +2,8 @@ Docker.build
 Docker.out
 Dockerfile
 
-.cache
+# Not ignoring cache, otherwise we cannot copy files from there.
+#.cache
+
 .dockerignore
 .git

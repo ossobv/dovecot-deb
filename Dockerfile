@@ -5,7 +5,7 @@ MAINTAINER Walter Doekes <wjdoekes+dovecot@osso.nl>
 # yet. Use a hack to s/debian:stretch/debian:OTHER/g above instead.
 ARG oscodename=xenial
 ARG upname=dovecot
-ARG upversion=2.3.5
+ARG upversion=2.3.6
 ARG debepoch=1:
 ARG debversion=0osso1
 
@@ -41,8 +41,8 @@ RUN apt-get install -y \
 
 # Hardcode sha512sums. You may pass these as build-arg too though.
 ARG upsha512=\
-041ec1c33c6accb5c89d96d7ab2f7dd59795f496c17faea1906e7977983e4a38\
-7aa855a238376515c09532731634d9d42e6d6be22659062855241847ea0213d5
+ec28af2efcbd4ab534298c3342709251074dcdb0f0f4bcad0d24b996b273387e\
+2ce557d7ab54abafb69be3ed7dd61f25c82b9710d78156932e2eff7f941c9eb2
 ARG pigeonholesha512=\
 21519fc9b1152a947b64ce4251e1a4bdbe003b48233b1856a32696f9c1e29f73\
 0268c56eb38f9431bbfac345e6cd42e8c78c87d0702f39ebf20c6d326dcdbb94
@@ -89,8 +89,12 @@ RUN printf "%s\n" \
     QUILT_NO_DIFF_TIMESTAMPS=1 \
     'QUILT_REFRESH_ARGS="-p ab --no-timestamps --no-index"' \
     'QUILT_DIFF_OPTS="--show-c-function"' \
-    >~/.quiltrc
+    >/root/.quiltrc && \
+    cp /root/.quiltrc /bin/.quiltrc
 COPY . debian/
+# .. and remove .cache which we unfortunately added because of "COPY .".
+RUN rm -rf debian/.cache
+
 RUN mv /build/pigeonhole.patch debian/patches/pigeonhole.patch
 
 # Build, but become 'bin' before we do, because the next postfix tests
