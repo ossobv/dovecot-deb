@@ -8,7 +8,7 @@ Last-Update: 2018-09-17
 
 --- a/configure.ac
 +++ b/configure.ac
-@@ -302,7 +302,12 @@ AM_ICONV
+@@ -295,7 +295,12 @@
  # SIZE_MAX is missing without this
  CXXFLAGS="$CXXFLAGS -D__STDC_LIMIT_MACROS"
  
@@ -24,7 +24,7 @@ Last-Update: 2018-09-17
  
 --- a/src/config/all-settings.c
 +++ b/src/config/all-settings.c
-@@ -2099,7 +2099,7 @@ static const struct submission_settings
+@@ -2211,7 +2211,7 @@
  
  	.hostname = "",
  
@@ -33,7 +33,7 @@ Last-Update: 2018-09-17
  	.login_trusted_networks = "",
  
  	.submission_max_mail_size = 40*1024*1024,
-@@ -3490,7 +3490,7 @@ static const struct setting_define login
+@@ -3795,7 +3795,7 @@
  static const struct login_settings login_default_settings = {
  	.login_trusted_networks = "",
  	.login_source_ips = "",
@@ -42,18 +42,18 @@ Last-Update: 2018-09-17
  	.login_log_format_elements = "user=<%u> method=%m rip=%r lip=%l mpid=%e %c session=<%{session}>",
  	.login_log_format = "%$: %s",
  	.login_access_sockets = "",
-@@ -3648,7 +3648,7 @@ static const struct lmtp_settings lmtp_d
+@@ -3956,7 +3956,7 @@
  	.lmtp_rawlog_dir = "",
  	.lmtp_proxy_rawlog_dir = "",
  
 -	.login_greeting = PACKAGE_NAME" ready.",
 +	.login_greeting = DOVECOT_NAME" ready.",
- 	.login_trusted_networks = ""
- };
- static const struct setting_parser_info *lmtp_setting_dependencies[] = {
+ 	.login_trusted_networks = "",
+ 
+ 	.mail_plugins = "",
 --- a/src/lib-smtp/smtp-server.c
 +++ b/src/lib-smtp/smtp-server.c
-@@ -37,7 +37,7 @@ struct smtp_server *smtp_server_init(con
+@@ -47,7 +47,7 @@
  	if (set->login_greeting != NULL && *set->login_greeting != '\0')
  		server->set.login_greeting = p_strdup(pool, set->login_greeting);
  	else
@@ -64,18 +64,18 @@ Last-Update: 2018-09-17
  	} else  {
 --- a/src/lmtp/lmtp-settings.c
 +++ b/src/lmtp/lmtp-settings.c
-@@ -82,7 +82,7 @@ static const struct lmtp_settings lmtp_d
+@@ -85,7 +85,7 @@
  	.lmtp_rawlog_dir = "",
  	.lmtp_proxy_rawlog_dir = "",
  
 -	.login_greeting = PACKAGE_NAME" ready.",
 +	.login_greeting = DOVECOT_NAME" ready.",
- 	.login_trusted_networks = ""
- };
+ 	.login_trusted_networks = "",
  
+ 	.mail_plugins = "",
 --- a/src/login-common/login-settings.c
 +++ b/src/login-common/login-settings.c
-@@ -48,7 +48,7 @@ static const struct setting_define login
+@@ -48,7 +48,7 @@
  static const struct login_settings login_default_settings = {
  	.login_trusted_networks = "",
  	.login_source_ips = "",
@@ -86,7 +86,7 @@ Last-Update: 2018-09-17
  	.login_access_sockets = "",
 --- a/src/submission/submission-settings.c
 +++ b/src/submission/submission-settings.c
-@@ -99,7 +99,7 @@ static const struct submission_settings
+@@ -101,7 +101,7 @@
  
  	.hostname = "",
  

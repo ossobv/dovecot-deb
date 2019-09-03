@@ -5,20 +5,20 @@ MAINTAINER Walter Doekes <wjdoekes+dovecot@osso.nl>
 # yet. Use a hack to s/debian:stretch/debian:OTHER/g above instead.
 ARG oscodename=xenial
 ARG upname=dovecot
-ARG upversion=2.3.6
+ARG upversion=2.3.7.2
 ARG debepoch=1:
 ARG debversion=0osso1
 
-ARG pigeonholeversion=0.5.5
+ARG pigeonholeversion=0.5.7
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy debian dir, check version
 RUN mkdir -p /build/debian
 COPY ./changelog /build/debian/changelog
 RUN . /etc/os-release && \
     fullversion="${upversion}-${debversion}+${ID%%[be]*}${VERSION_ID}" && \
-    expected="${upname} (${debepoch}${fullversion}) ${oscodename}; urgency=medium" && \
+    expected="${upname} (${debepoch}${fullversion}) ${oscodename}; urgency=high" && \
     head -n1 /build/debian/changelog && \
     if test "$(head -n1 /build/debian/changelog)" != "${expected}"; \
     then echo "${expected}  <-- mismatch" >&2; false; fi
@@ -39,13 +39,9 @@ RUN apt-get install -y \
     bzip2 ca-certificates curl git \
     build-essential dh-autoreconf devscripts dpkg-dev equivs quilt
 
-# Hardcode sha512sums. You may pass these as build-arg too though.
-ARG upsha512=\
-ec28af2efcbd4ab534298c3342709251074dcdb0f0f4bcad0d24b996b273387e\
-2ce557d7ab54abafb69be3ed7dd61f25c82b9710d78156932e2eff7f941c9eb2
-ARG pigeonholesha512=\
-21519fc9b1152a947b64ce4251e1a4bdbe003b48233b1856a32696f9c1e29f73\
-0268c56eb38f9431bbfac345e6cd42e8c78c87d0702f39ebf20c6d326dcdbb94
+# https://repo.dovecot.org/DOVECOT-REPO-GPG
+COPY DOVECOT-REPO-GPG /tmp/
+RUN gpg --import </tmp/DOVECOT-REPO-GPG
 
 # Set up upstream source, move debian dir and jump into dir.
 #
@@ -53,26 +49,27 @@ ARG pigeonholesha512=\
 # once using the curl command below into .cache/* if you want. The COPY
 # is made conditional by the "[2]" "wildcard". (We need one existing
 # file (README.rst) so the COPY doesn't fail.)
-COPY ./README.rst .cache/${upname}_${upversion}.orig.tar.g[z] /build/
+COPY ./README.rst ${upname}-${upversion}.tar.gz.sig \
+    .cache/${upname}_${upversion}.orig.tar.g[z] /build/
 RUN if ! test -s /build/${upname}_${upversion}.orig.tar.gz; then \
     url="https://dovecot.org/releases/2.3/${upname}-${upversion}.tar.gz" && \
     echo "Fetching: ${url}" >&2 && \
     curl --fail "${url}" >/build/${upname}_${upversion}.orig.tar.gz; fi
-RUN sha512sum /build/${upname}_${upversion}.orig.tar.gz && \
-    echo "$upsha512  /build/${upname}_${upversion}.orig.tar.gz" | sha512sum -c - && \
+RUN gpg --verify /build/${upname}-${upversion}.tar.gz.sig \
+    /build/${upname}_${upversion}.orig.tar.gz && \
     cd /build && tar zxf "${upname}_${upversion}.orig.tar.gz" && \
     mv debian "${upname}-${upversion}/"
 
 # Special tricks: fetch and update pigeonhole/sieve/managesieve patch.
-COPY ./README.rst .cache/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.g[z] /build/
-RUN if ! test -s /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz; then \
-    url="https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz" && \
+COPY ./README.rst dovecot-2.3-pigeonhole-${pigeonholeversion}.tar.gz.sig \
+    .cache/dovecot-2.3-pigeonhole-${pigeonholeversion}.tar.g[z] /build/
+RUN if ! test -s /build/dovecot-2.3-pigeonhole-${pigeonholeversion}.tar.gz; then \
+    url="https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-${pigeonholeversion}.tar.gz" && \
     echo "Fetching: ${url}" >&2 && \
-    curl --fail "${url}" >/build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz; fi
-RUN sha512sum /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz && \
-    echo "$pigeonholesha512  /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz" | sha512sum -c - && \
+    curl --fail "${url}" >/build/dovecot-2.3-pigeonhole-${pigeonholeversion}.tar.gz; fi
+RUN gpg --verify /build/dovecot-2.3-pigeonhole-${pigeonholeversion}.tar.gz.sig && \
     mkdir /build/pigeonhole /tmp/pigeonhole && \
-    tar -zx --strip-components=1 -C /build/pigeonhole -f /build/dovecot-2.3-pigeonhole-$pigeonholeversion.tar.gz && \
+    tar -zx --strip-components=1 -C /build/pigeonhole -f /build/dovecot-2.3-pigeonhole-${pigeonholeversion}.tar.gz && \
     cd / && ( diff -uNr tmp/pigeonhole build/pigeonhole >build/pigeonhole.patch || true ) && \
     rmdir /tmp/pigeonhole
 
@@ -82,7 +79,7 @@ WORKDIR "/build/${upname}-${upversion}"
 COPY ./control debian/control
 RUN mk-build-deps --install --remove --tool "apt-get -y" debian/control
 
-# Set up build env
+# Set up build env.
 RUN printf "%s\n" \
     QUILT_PATCHES=debian/patches \
     QUILT_NO_DIFF_INDEX=1 \
@@ -93,7 +90,8 @@ RUN printf "%s\n" \
     cp /root/.quiltrc /bin/.quiltrc
 COPY . debian/
 # .. and remove .cache which we unfortunately added because of "COPY .".
-RUN rm -rf debian/.cache
+# And the .sig files which we won't be needing.
+RUN rm -rf debian/.cache debian/*.sig
 
 RUN mv /build/pigeonhole.patch debian/patches/pigeonhole.patch
 
