@@ -1,6 +1,12 @@
 OSSO build of dovecot 2.3.2.1
 =============================
 
+⚠️ WARNING ⚠️ This package is obsolete❗
+
+*Instead, see:* https://repo.dovecot.org/
+
+----
+
 Using Docker::
 
     ./Docker.build
